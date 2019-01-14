@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title
+  p Welcome to #{title}
+  //h1 #{dept_rows}
+  select(id='dept_select')
+    option Select a department:
+    - each item in dept_rows
+        option(class='dept_select_option')= item.dept
+  select
+    option Select a course:
+  form(method='POST' action="/users")
+    //label Input here
+    input(type="text", name="input_text")
+    button(type="submit") Submit
