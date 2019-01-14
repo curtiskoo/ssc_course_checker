@@ -1,7 +1,7 @@
 const { Pool, Client } = require('pg');
 var fs = require('fs');
 
-let postgres = fs.readFileSync('../../postgres.txt').toString().split('\n');
+let postgres = fs.readFileSync('postgres.txt').toString().split('\n');
 const connectionString = postgres[0];
 
 const pool = new Pool({
