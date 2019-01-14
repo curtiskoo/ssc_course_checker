@@ -72,6 +72,7 @@ class Department extends Component {
         await this.setState({value: event.target.value, course:'', section:''});
         if (this.state.term !== '' && this.state.value !== '') {
             this.getCourseNum()
+            this.getCourseSection()
         }
     }
 
@@ -86,6 +87,7 @@ class Department extends Component {
         await this.setState({term: event.target.value, course:'', section:''});
         if (this.state.term !== '' && this.state.value !== '') {
             this.getCourseNum()
+            this.getCourseSection()
         }
     }
 
