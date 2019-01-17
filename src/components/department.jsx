@@ -1,10 +1,10 @@
 import React, {Component} from 'react';
-import Course from "./course";
+import Customer from "./customer";
 //import Select from "react-select";
 
 const server = "http://localhost:8000/api/";
 
-class Department extends Component {
+export default class Department extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -101,60 +101,64 @@ class Department extends Component {
         return (
             <React.Fragment>
                 <form>
-                    <h1 style={this.hStyles}>SSC Course Checker</h1>
-                    <div className="row" style={this.divStyles}>
-                        <select className="form-control"  style={this.selectStyles} id="year_select" value={this.state.year} onChange={this.handleChangeYear}>
+                    <h1 style={styles.hStyles}>SSC Course Checker</h1>
+                    <h3 style={styles.hStyles}>1) Choose a School Year + Term:</h3>
+                    <div className="row" style={styles.divStyles}>
+                        <select className="form-control"  style={styles.selectStyles} id="year_select" value={this.state.year} onChange={this.handleChangeYear}>
                             <option value="" disabled selected>Select a School Year</option>
                             <option value={this.state.year}>{this.state.year}</option>
                         </select>
-                        <select className="form-control" style={this.selectStyles} id="term_select" value={this.state.term} onChange={this.handleChangeTerm}>
+                        <select className="form-control" style={styles.selectStyles} id="term_select" value={this.state.term} onChange={this.handleChangeTerm}>
                             <option value="" disabled selected>Select a Term</option>
                             { this.state.terms.map(t => <option value={t}>{ t }</option>) }
                         </select>
                     </div>
-                    <div className='row' style={this.divStyles}>
-                        <select className="form-control" style={this.selectStyles} id="dept_select" value={this.state.value} onChange={this.handleChangeDept}>
+                    <h3 style={styles.hStyles}>2) Choose a Course:</h3>
+                    <div className='row' style={styles.divStyles}>
+                        <select className="form-control" style={styles.selectStyles} id="dept_select" value={this.state.value} onChange={this.handleChangeDept}>
                             <option value="" disabled selected>Select a Department</option>
                             { this.state.dept.map(d => <option value={d.dept}>{ d.dept }</option>) }
                         </select>
-                        <select className="form-control" style={this.selectStyles} id="num_select" value={this.state.course} onChange={this.handleChangeNum}>
+                        <select className="form-control" style={styles.selectStyles} id="num_select" value={this.state.course} onChange={this.handleChangeNum}>
                             <option value="" disabled selected>Select a Course</option>
                             { this.state.courses.map(c => <option value={c.course} selected={c.course === this.state.course}>{ c.course }</option>) }
                         </select>
-                        <select className="form-control" style={this.selectStyles} id="section_select" value={this.state.section} onChange={this.handleChangeSection}>
+                        <select className="form-control" style={styles.selectStyles} id="section_select" value={this.state.section} onChange={this.handleChangeSection}>
                             <option value="" disabled selected>Select a Section</option>
                             { this.state.sections.map(s => <option value={s.section} selected={s.section === this.state.section}>{ s.section }</option>) }
                         </select>
                     </div>
-                    <button style={this.btnStyles} className="btn-success">Submit</button>
+                    <h3 style={styles.hStyles}>3) Enter your information: </h3>
+                    <Customer/>
+                    <button style={styles.btnStyles} className="btn-success">Submit</button>
                 </form>
             </React.Fragment>
         );
     }
 
-    divStyles = {
+}
+
+
+export const styles = {
+
+    divStyles: {
         margin: '25px 0px 0px 25px'
-    };
+    },
 
-    sideStyles = {
-        width: '30%',
-        margin: '0px 25px 0px 0px'
-    }
-
-    selectStyles = {
+    selectStyles : {
         width: '20%',
         margin: '0px 25px 0px 0px'
-    };
+    },
 
-    btnStyles = {
+    btnStyles : {
         borderRadius: '5px',
         width: '10%',
         margin: '25px 0px 0px 25px'
-    };
+    },
 
-    hStyles = {
+    hStyles : {
         margin: '25px'
-    };
-}
+    }
 
-export default Department;
+};
+
