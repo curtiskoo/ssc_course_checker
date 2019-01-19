@@ -19,6 +19,8 @@
 .env.production.local
 .idea
 postgres.txt
+twilio.txt
+venv
 
 npm-debug.log*
 yarn-debug.log*

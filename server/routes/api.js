@@ -3,6 +3,16 @@ var router = express.Router();
 var pool = require('../bin/database');
 
 
+function apiRequest(apistring) {
+    return new Promise(function (resolve, reject) {
+        pool.query(apistring, function (err, res1) {
+            let r = res1.rows;
+            console.log(r);
+            resolve(r)
+        })
+    })
+}
+
 function getDeptRequest() {
     return new Promise(function (resolve, reject) {
         pool.query('SELECT * FROM dept', function (err, res1) {
@@ -75,6 +85,23 @@ router.get('/get_course_section', async function(req, res) {
         //console.log(dept);
         rows = await getCourseSection(dept, year, term, course);
         res.end(JSON.stringify({sections:rows}))
+    } catch (e) {
+        console.log(e)
+    }
+
+});
+
+router.get('/get_year', async function(req, res) {
+    // let dept = req.query.dept;
+    // let course = req.query.course;
+    // let year = req.query.year;
+    // let term = req.query.term;
+
+    let rows = [];
+    try {
+        //console.log(dept);
+        rows = await apiRequest("SELECT distinct year FROM courses");
+        res.end(JSON.stringify({years:rows}))
     } catch (e) {
         console.log(e)
     }

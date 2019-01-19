@@ -25,7 +25,7 @@ ACCOUNT = "AC037d2aa350745a2dc083b0fb7c4dfe87"
 
 def execute(cmd, param=None, fetch=None):
     conn = psy.connect(DB, sslmode='require')
-    psy.extras.register_hstore(conn,globally = True)
+    psy.extras.register_hstore(conn, globally=True)
     
     cur = conn.cursor(cursor_factory=DictCursor)
     
@@ -67,13 +67,11 @@ def send_msg(title,body, fr_ad, to_ad):
 
 def send_text(message, fr_ad, to_ad):
     client = Client(ACCOUNT, AUTH)
-    send = client.messages.create(to=to_ad, from_=fr_ad, body=message)
+    client.messages.create(to=to_ad, from_=fr_ad, body=message)
     
 
-#r = requests.get(course_url)
 fromaddr = "+16046708672"
 my_phone = "+17788988820"
-#to_phone = previous[0]
 to_phone = "+17788988820"
 
 toaddr = to_phone

@@ -13,8 +13,9 @@ export default class Department extends Component {
             dept: [],
             value: '',
             firstload: false,
-            year: `${new Date().getFullYear()-1}/${new Date().getFullYear()}`,
-            terms: ['W', 'F', 'S'],
+            year: '',
+            years: [],
+            terms: ['W', 'S'],
             term: '',
             sections: [],
             section: ''
@@ -63,15 +64,27 @@ export default class Department extends Component {
             .then(responseJSON => this.setState({sections: responseJSON.sections}))
     }
 
+    getYear() {
+        const req = server + 'get_year';
+        console.log(req);
+        if (this.state.years === []) {
+            fetch(req, {
+                method: 'GET',
+            })
+                .then(response => response.json())
+                .then(responseJSON => this.setState({years: responseJSON.years}))
+        }
+    }
+
     async handleChangeYear(event) {
-        await  this.setState({year: event.target.value})
+        await this.setState({year: event.target.value})
     }
 
     async handleChangeDept(event) {
         console.log(event.target.value);
         await this.setState({value: event.target.value, course:'', section:''});
         if (this.state.term !== '' && this.state.value !== '') {
-            this.getCourseNum()
+            this.getCourseNum();
             this.getCourseSection()
         }
     }
@@ -97,6 +110,7 @@ export default class Department extends Component {
 
     render() {
         this.getDept();
+        this.getYear();
         console.log(this.state);
         return (
             <React.Fragment>
@@ -106,7 +120,7 @@ export default class Department extends Component {
                     <div className="row" style={styles.divStyles}>
                         <select className="form-control"  style={styles.selectStyles} id="year_select" value={this.state.year} onChange={this.handleChangeYear}>
                             <option value="" disabled selected>Select a School Year</option>
-                            <option value={this.state.year}>{this.state.year}</option>
+                            { this.state.years.map(t => <option value={t.year}>{ t.year }</option>) }
                         </select>
                         <select className="form-control" style={styles.selectStyles} id="term_select" value={this.state.term} onChange={this.handleChangeTerm}>
                             <option value="" disabled selected>Select a Term</option>
