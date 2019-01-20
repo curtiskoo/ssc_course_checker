@@ -10,10 +10,10 @@ from twilio.rest import Client
 from datetime import datetime
 
 postgres_file = open("{}/postgres.txt".format(os.getcwd())).read().split('\n')
-#twilio_file = open("{}/twilio.txt".format(os.getcwd())).read().split('\n')
+twilio_file = open("{}/twilio.txt".format(os.getcwd())).read().split('\n')
 
-#ACCOUNT = twilio_file[0]
-#AUTH = twilio_file[1]
+ACCOUNT = twilio_file[0]
+AUTH = twilio_file[1]
 
 class Course:
     def parse_course_id(self):
@@ -24,11 +24,13 @@ class Course:
         self.num = temp_id_lst[3]
         self.section = temp_id_lst[4]
 
-    def __init__(self, course_id):
+    def __init__(self, course_id, seat):
+        self.seat = seat
         self.course_id = course_id
         self.year = self.term = self.dept = self.num = self.section = None
         self.parse_course_id()
         self.general = 0
+        self.shouldtext = False
         self.restricted = 0
         self.raw_dic = {'Total Seats Remaining:': None,
                        'Currently Registered:': None,
@@ -64,9 +66,14 @@ class Course:
         self.restricted = self.raw_dic['Restricted Seats Remaining*:']
 
 
-test_course = Course('2018_W_CPSC_110_L13')
-test_course.get_course_seats()
-print(test_course.raw_dic, test_course.general, test_course.restricted)
+    def should_text(self):
+        if self.seat == 1:
+            self.shouldtext = (self.restricted > 0)
+        elif self.seat == 10:
+            self.shouldtext = (self.general > 0)
+        elif self.seat == 11:
+            self.shouldtext = (self.restricted > 0) or (self.general > 0)
+        return self.shouldtext
 
 
 
@@ -99,6 +106,7 @@ def send_text(message, to_ad):
     client = Client(ACCOUNT, AUTH)
     client.messages.create(to=to_ad, from_=fr_ad, body=message)
 
+
 """
 COURSES SCHEMA:
 
@@ -107,6 +115,25 @@ term
 dept
 course
 section
+seat_general*
+seat_restricted*
+
+(year, term, dept, course, section) (unique)
+
+CUSTOMER SCHEMA:
+
+phone (unique, primary key)
+customer
+
+REGISTRATION SCHEMA:
+CONSTRAINT UNIQUE (phone, course_id, ts)
+phone
+course_id
+ts (timestamp)
+seat (10, 01, 11)
+fulfilled (boolean)
+
+
 
 #test = execute("SELECT * FROM coursereq", None, True)
 #test = execute("UPDATE courses SET term = %s WHERE term = %s", ('W', 'F'))
@@ -116,20 +143,50 @@ test = execute("SELECT * FROM courses",None, True)
 pprint(test)
 #execute("CREATE TABLE coursereq (email varchar, course jsonb, details jsonb, boo bool);",None,None)
 #test = execute("DROP TABLE customer")
-
-
+test = execute("ALTER TABLE registration ADD CONSTRAINT registration_unique UNIQUE(phone, course_id, ts)")
+#execute("CREATE TABLE registration (phone varchar, course_id varchar, ts TIMESTAMP, seat int, fulfilled bool)")
 
 """
+
+#execute('ALTER TABLE courses ADD seat_restricted int')
+
+# test = execute("SELECT * FROM registration",None, True)
+# pprint(test)
 #test = execute("CREATE TABLE customer (name varchar, phone varchar primary key)", None, None)
-test = execute("ALTER TABLE customer ADD UNIQUE (phone)")
-test = execute("INSERT INTO customer (phone, name) VALUES (%s, %s)", ("Test" , "7783231234"))
-test = execute("SELECT * FROM customer", None, True)
-pprint(test)
+# test = execute("ALTER TABLE customer ADD UNIQUE (phone)")
+# test = execute("INSERT INTO customer (phone, name) VALUES (%s, %s)", ("Test" , "7783231234"))
+# test = execute("SELECT * FROM customer", None, True)
+# pprint(test)
 
 
 #send_text('hello', '7788988820') // this works to send a message
 
-def get_course_seats(year, sess, dept, course, section):
-    course_url = ("https://courses.students.ubc.ca/cs/courseschedule?pname=subjarea&tname=subj-section&dept={}&course={}&section={}".format(dept, course, section))
-    sess_url = "https://courses.students.ubc.ca/cs/main?sessyr={}&sesscd={}".format(year, sess)
+#test = execute("INSERT INTO courses (year, term, dept, course, section) VALUES (%s, %s, %s, %s, %s)", ('2018', 'W', 'MATH', '200', '105'))
+
+
+if __name__ == "__main__":
+    registration_records = execute("SELECT * FROM registration", None, True)
+    registration_records = list(filter(lambda x: (not(x[4])), registration_records))
+    for record in registration_records:
+        print("[Currently Handling]: {}".format(record))
+        phone = record[0]
+        course_id = record[1]
+        ts = record[2]
+        seat = record[3]
+        fulfilled = record[4]
+
+        course = Course(course_id, seat)
+        course.get_course_seats()
+
+        if (course.should_text()):
+            #name = execute("SELECT * FROM customer WHERE phone = %s", (phone), None)
+            print('Texting: {}'.format(phone))
+            message = "[{} {} {}] There are seats available!\nGeneral Seats: {}\nRestricted Seats: {}".format(course.dept, course.num, course.section, course.general, course.restricted)
+            #send_text(message, phone)
+            execute("UPDATE registration SET fulfilled = TRUE WHERE phone = %s AND course_id = %s AND ts = %s", (phone, course_id, ts))
+
+
+
+
+
 
