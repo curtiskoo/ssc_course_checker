@@ -152,7 +152,6 @@ export default class Department extends Component {
                     </div>
                     <h3 style={styles.hStyles}>3) Enter your information: </h3>
                     <Customer/>
-                    <button style={styles.btnStyles} className="btn-success">Submit</button>
                 </form>
             </React.Fragment>
         );
