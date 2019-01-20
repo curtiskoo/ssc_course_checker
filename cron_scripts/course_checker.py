@@ -154,12 +154,12 @@ test = execute("ALTER TABLE registration ADD CONSTRAINT registration_unique UNIQ
 # pprint(test)
 #test = execute("CREATE TABLE customer (name varchar, phone varchar primary key)", None, None)
 # test = execute("ALTER TABLE customer ADD UNIQUE (phone)")
-# test = execute("INSERT INTO customer (phone, name) VALUES (%s, %s)", ("Test" , "7783231234"))
+# test = execute("INSERT INTO customer (phone, name) VALUES (%s, %s)", ("Test" , "xxxxxxxxxx"))
 # test = execute("SELECT * FROM customer", None, True)
 # pprint(test)
 
 
-#send_text('hello', '7788988820') // this works to send a message
+#send_text('hello', 'xxxxxxxxxx') // this works to send a message
 
 #test = execute("INSERT INTO courses (year, term, dept, course, section) VALUES (%s, %s, %s, %s, %s)", ('2018', 'W', 'MATH', '200', '105'))
 
