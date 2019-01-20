@@ -32,14 +32,12 @@ export default class Department extends Component {
     //state = {dept: [], value: '', firstload: false};
 
     getDept() {
-        const req = server+'get_dept';
+        const req = server+`get_dept?year=${(this.state.year)}&term=${this.state.term}`;
         //console.log(req);
-        if (this.state.firstload === false) {
-            fetch(req, {method: 'GET'})
-                .then(response => response.json())
-                //.then(response => console.log(response))
-                .then(responseJson => this.setState({dept: responseJson.dept, firstload: true}))
-        }
+        fetch(req, {method: 'GET'})
+            .then(response => response.json())
+            //.then(response => console.log(response))
+            .then(responseJson => this.setState({dept: responseJson.dept}))
     }
 
     getCourseNum() {
@@ -67,17 +65,21 @@ export default class Department extends Component {
     getYear() {
         const req = server + 'get_year';
         console.log(req);
-        if (this.state.years === []) {
-            fetch(req, {
-                method: 'GET',
-            })
-                .then(response => response.json())
-                .then(responseJSON => this.setState({years: responseJSON.years}))
-        }
+        fetch(req, {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then(responseJSON => this.setState({years: responseJSON.years}))
+
     }
 
     async handleChangeYear(event) {
-        await this.setState({year: event.target.value})
+        await this.setState({year: event.target.value, course:'', section:'', value:''});
+        if (this.state.year !== '' && this.state.term !== '') {
+            this.getDept();
+            this.getCourseNum();
+            this.getCourseSection();
+        }
     }
 
     async handleChangeDept(event) {
@@ -99,8 +101,11 @@ export default class Department extends Component {
     async handleChangeTerm(event) {
         await this.setState({term: event.target.value, course:'', section:''});
         if (this.state.term !== '' && this.state.value !== '') {
-            this.getCourseNum()
-            this.getCourseSection()
+            this.getCourseNum();
+            this.getCourseSection();
+        } if (this.state.term !== '' && this.state.year !== '') {
+            await this.setState({value: ''});
+            this.getDept()
         }
     }
 
@@ -109,8 +114,11 @@ export default class Department extends Component {
     }
 
     render() {
-        this.getDept();
-        this.getYear();
+        if (this.state.firstload === false) {
+            //this.getDept();
+            this.getYear();
+            this.setState({firstload:true})
+        }
         console.log(this.state);
         return (
             <React.Fragment>

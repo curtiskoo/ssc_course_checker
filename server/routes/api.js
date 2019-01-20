@@ -46,9 +46,12 @@ function getCourseSection(dept, year, term, num) {
 router.get('/get_dept', async function(req, res) {
     //let deptList = getDeptRequest();
     //res.end(JSON.stringify({dept:deptList}))
+    let year = req.query.year;
+    let term = req.query.term;
+
     let rows = [];
     try {
-        rows = await getDeptRequest();
+        rows = await apiRequest(`SELECT distinct dept FROM courses WHERE year = '${year}' and term = '${term}'`);
         //console.log(rows);
         res.end(JSON.stringify({dept:rows}));
         console.log('here')
